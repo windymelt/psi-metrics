@@ -15,7 +15,7 @@
       "value": "60"
     },
     "URLS": {
-      "description": "The comma-separated URLs"  ,
+      "description": "The space-separated URLs"  ,
       "required": true
     }
   }
