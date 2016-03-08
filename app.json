@@ -1,0 +1,22 @@
+{
+  "name": "psi-metrics",
+  "description": "A template to create and deploy your psi-metrics to Heroku",
+  "env": {
+    "MACKEREL_APIKEY": {
+      "description": "API key of Mackerel",
+      "required": true
+    },
+    "MACKEREL_SERVICE": {
+      "description": "A service name of the metrics",
+      "required": true
+    },
+    "INTERVAL_SECS": {
+      "description": "Run interval in seconds (The value must be valid as a integer)",
+      "value": "60"
+    },
+    "URLS": {
+      "description": "The comma-separated URLs"  ,
+      "required": true
+    }
+  }
+}
