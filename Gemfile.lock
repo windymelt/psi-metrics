@@ -1,0 +1,26 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    faraday (0.9.2)
+      multipart-post (>= 1.2, < 3)
+    foreman (0.78.0)
+      thor (~> 0.19.1)
+    mackerel-client (0.0.8)
+      faraday (~> 0.9)
+    multipart-post (2.0.0)
+    parallel (1.6.2)
+    rake (10.4.2)
+    thor (0.19.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  faraday
+  foreman
+  mackerel-client
+  parallel
+  rake
+
+BUNDLED WITH
+   1.11.2
