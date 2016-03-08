@@ -77,6 +77,23 @@ def post_scores_to_mackerel(mackerel_service: , api_key: , scores: )
   })
 end
 
+task :clock do
+  interval_secs = Integer(ENV['INTERVAL_SECS'])
+  wait_secs = 10
+  logger.info "Run with interval: #{interval_secs}"
+  last_run = nil
+  loop do
+    if last_run.nil? || (Time.now - last_run) >= interval_secs
+      logger.info "run"
+      last_run = Time.now
+      system 'bundle', 'exec', 'rake', 'post'
+    else
+      logger.info "Wait #{wait_secs} ..."
+      sleep wait_secs
+    end
+  end
+end
+
 task :post do
   logger.info 'rake run'
 
