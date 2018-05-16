@@ -42,14 +42,18 @@ def as_metric_name(str)
 end
 
 # => [url: String, score: Integer]
-def fetch_psi_scores(urls)
+def fetch_psi_scores(urls, api_key)
   logger.info "Fetch scores"
   client = Faraday.new(url: 'https://www.googleapis.com')
   results = Parallel.map(urls, in_threads: 4) {|url|
     logger.info "Fetch score of #{url}"
+    params = {
+      url: url
+    }
+    params[:key] = api_key if api_key
     [
       url,
-      client.get('/pagespeedonline/v2/runPagespeed', url: url).tap { logger.info "Done: #{url}" }
+      client.get('/pagespeedonline/v2/runPagespeed', params).tap { logger.info "Done: #{url}" }
     ]
   }
   results.map {|(url, res)| [url, extract_score(res)] }
@@ -65,7 +69,7 @@ def post_scores_to_mackerel(mackerel_service: , api_key: , scores: )
       unit: 'float',
       metrics: (scores.map {|(url, _)| [url, as_metric_name(url)] }.map {|(url, safe_url)|
         {
-          name: "custom.pagespeed.#{safe_url}", 
+          name: "custom.pagespeed.#{safe_url}",
           displayName: url,
           isStacked: false,
         }
@@ -103,9 +107,10 @@ task :post do
 
   api_key          = ENV['MACKEREL_APIKEY'] or abort "MACKEREL_APIKEY required"
   mackerel_service = ENV['MACKEREL_SERVICE'] or abort "MACKEREL_SERVICE required"
+  google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
 
-  scores = fetch_psi_scores(urls).select{|score| score[1] }
+  scores = fetch_psi_scores(urls, google_api_key).select{|score| score[1] }
   if scores.length > 0
     post_scores_to_mackerel(mackerel_service: mackerel_service, api_key: api_key, scores: scores)
   end

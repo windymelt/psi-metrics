@@ -10,6 +10,10 @@
       "description": "A service name of the metrics",
       "required": true
     },
+    "GOOGLE_APIKEY": {
+      "description": "(optional) API key of Google. You must activate PageSpeed Insights API.",
+      "required": false
+    },
     "INTERVAL_SECS": {
       "description": "Run interval in seconds (The value must be valid as a integer)",
       "value": "60"
