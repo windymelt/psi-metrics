@@ -30,6 +30,10 @@ end
 def extract_score(res)
   return nil unless res.success?
   data = JSON.parse(res.body)
+  unless data['ruleGroups']
+    logger.warn "result has no ruleGroups: #{data.inspect}"
+    return nil
+  end
   data['ruleGroups']['SPEED']['score']
 end
 
@@ -106,6 +110,8 @@ task :post do
   google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
 
-  scores = fetch_psi_scores(urls, google_api_key)
-  post_scores_to_mackerel(mackerel_service: mackerel_service, api_key: api_key, scores: scores)
+  scores = fetch_psi_scores(urls, google_api_key).select{|score| score[1] }
+  if scores.length > 0
+    post_scores_to_mackerel(mackerel_service: mackerel_service, api_key: api_key, scores: scores)
+  end
 end
