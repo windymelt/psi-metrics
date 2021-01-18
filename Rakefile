@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'bundler/setup' unless defined?(Bundler)
 
 require 'faraday'
@@ -30,11 +31,7 @@ end
 def extract_score(res)
   return nil unless res.success?
   data = JSON.parse(res.body)
-  unless data['ruleGroups']
-    logger.warn "result has no ruleGroups: #{data.inspect}"
-    return nil
-  end
-  data['ruleGroups']['SPEED']['score']
+  data['lighthouseResult']['categories']['performance']['score']
 end
 
 def as_metric_name(str)
@@ -48,12 +45,15 @@ def fetch_psi_scores(urls, api_key)
   results = Parallel.map(urls, in_threads: 4) {|url|
     logger.info "Fetch score of #{url}"
     params = {
-      url: url
+      url: url,
+      fields: "lighthouseResult/categories/*/score",
+      strategy: "desktop",
+      category: "performance",
     }
     params[:key] = api_key if api_key
     [
       url,
-      client.get('/pagespeedonline/v2/runPagespeed', params).tap { logger.info "Done: #{url}" }
+      client.get('/pagespeedonline/v5/runPagespeed', params).tap { logger.info "Done: #{url}" }
     ]
   }
   results.map {|(url, res)| [url, extract_score(res)] }
@@ -102,6 +102,15 @@ task :clock do
   end
 end
 
+task :kick do
+  # テスト目的
+  logger.info 'kicking PSI'
+  google_api_key   = ENV['GOOGLE_APIKEY'] # optional
+  urls             = ENV['URLS'].split(/\s/)
+  scores = fetch_psi_scores(urls, google_api_key)
+  p scores
+end
+
 task :post do
   logger.info 'rake run'
 
@@ -110,7 +119,7 @@ task :post do
   google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
 
-  scores = fetch_psi_scores(urls, google_api_key).select{|score| score[1] }
+  scores = fetch_psi_scores(urls, google_api_key)
   if scores.length > 0
     post_scores_to_mackerel(mackerel_service: mackerel_service, api_key: api_key, scores: scores)
   end
