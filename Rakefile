@@ -107,7 +107,7 @@ task :kick do
   logger.info 'kicking PSI'
   google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
-  scores = fetch_psi_scores(urls, google_api_key)
+  scores = fetch_psi_scores(urls, google_api_key).select(|(url, score)| score)
   p scores
 end
 
