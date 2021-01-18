@@ -107,7 +107,7 @@ task :kick do
   logger.info 'kicking PSI'
   google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
-  scores = fetch_psi_scores(urls, google_api_key).select(|(url, score)| score)
+  scores = fetch_psi_scores(urls, google_api_key).select {|(url, score)| score}
   p scores
 end
 
@@ -119,7 +119,7 @@ task :post do
   google_api_key   = ENV['GOOGLE_APIKEY'] # optional
   urls             = ENV['URLS'].split(/\s/)
 
-  scores = fetch_psi_scores(urls, google_api_key).select(|(url, score)| score)
+  scores = fetch_psi_scores(urls, google_api_key).select {|(url, score)| score}
   if scores.length > 0
     post_scores_to_mackerel(mackerel_service: mackerel_service, api_key: api_key, scores: scores)
   end
