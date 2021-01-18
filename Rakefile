@@ -79,7 +79,7 @@ def post_scores_to_mackerel(mackerel_service: , api_key: , scores: )
   mackerel_client.post_service_metrics(mackerel_service, scores.map {|(url, score)|
     {
       name: "custom.pagespeed.#{as_metric_name(url)}",
-      value: score,
+      value: score * 100,
       time: now.to_i,
     }
   })
