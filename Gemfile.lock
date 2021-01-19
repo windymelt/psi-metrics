@@ -22,5 +22,8 @@ DEPENDENCIES
   parallel
   rake
 
+RUBY VERSION
+   ruby 2.7.2p137
+
 BUNDLED WITH
-   1.11.2
+   2.1.4
